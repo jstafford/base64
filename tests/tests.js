@@ -1,3 +1,37 @@
+var expect = require('expect');
+var base64 = require('./lib/index.js');
+
+describe('base64.encode', () => {
+
+    it('Should handle All possible octets', () => {
+      expect(base64.encode('\0\x01\x02\x03\x04\x05\x06\x07\b\t\n\x0B\f\r\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x7F'))
+      .toEqual('AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn8=');
+    });
+
+    it('Should have two padding characters when necessary', () => {
+      expect(base64.encode('a')).toEqual('YQ==');
+    });
+
+    it('Should have one padding character when necessary', () => {
+      expect(base64.encode('aa')).toEqual('YWE=');
+    });
+
+    it('Should have no padding characters when they are uncalled for', () => {
+      expect(base64.encode('aaa')).toEqual('YWFh');
+    });
+
+    it('Should encode trailing nulls', () => {
+      expect(base64.encode('foo\0')).toEqual('Zm9vAA==');
+      expect(base64.encode('foo\0\0')).toEqual('Zm9vAAA=');
+    });
+
+    it('Should throw on invalid characters', () => {
+      expect(base64.encode('\u05E2\u05D1\u05E8\u05D9\u05EA'))
+      .toThrow('The string to be encoded contains characters outside of the Latin1 range.');
+    });
+
+
+
 (function(root) {
   'use strict';
 
